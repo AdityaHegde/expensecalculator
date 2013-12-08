@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Expense Calculator</title>
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/extra.css">
+</head>
+<body>
+  <script type="text/x-handlebars" data-template-name="index">
+    <div class="container-fluid">
+      <div class="span3">
+        <div class="row-fluid">
+          <table class='table'>
+            <thead>
+              <tr><th>People<br>(Name - Owes|Owed)</th></tr>
+            </thead>
+            {{#each model.people}}
+            <tr><td>
+              {{#link-to 'person' this}}{{name}} - {{owes}}|{{owed}}{{/link-to}}
+            </td></tr>
+            {{/each}}
+          </table>
+          <div class="span">
+          {{#if addingPerson}}
+            <p>Name : {{input type="text" value=newPerson.name}}</p>
+            <button {{action 'savePerson'}}>Save</button>
+          {{else}}
+            <button {{action 'addPerson'}}>Add</button>
+          {{/if}}
+          </div>
+        </div>
+        <div class="row-fluid">
+          <table class='table'>
+            <thead>
+              <tr><th>Bills<br>(Name - Paid/Total)</th></tr>
+            </thead>
+            {{#each model.bills}}
+            <tr><td>
+              {{#link-to 'bill' this}}{{name}} - {{amtPaid}}/{{amt}}{{/link-to}}
+            </td></tr>
+            {{/each}}
+          </table>
+          <div class="span">
+          {{#if addingBill}}
+            <table>
+              <tr><td>Name</td><td>{{input type="text" value=newBill.name}}</td></tr>
+              <tr><td>Amount</td><td>{{input type="text" value=newBill.amt}}</td></tr>
+              <tr><td><button {{action 'saveBill'}}>Save</button></td></tr>
+            </table>
+          {{else}}
+            <button {{action 'addBill'}}>Add</button>
+          {{/if}}
+          </div>
+        </div>
+        <div class="row-fluid">
+          Total : {{amtPaid}}/{{totalAmt}}
+        </div>
+      </div>
+      <div class="span5">
+        {{outlet}}
+      </div>
+    </div>
+  </script>
+
+  <script type="text/x-handlebars" id="person">
+    <h4>{{model.name}}</h4>
+    <h5>Owes : {{model.owes}}</h5>
+    <h5>Owed : {{model.owed}}</h5>
+  </script>
+
+  <script type="text/x-handlebars" id="bill">
+    <h4>{{model.name}}</h4>
+    <h5>Amount : {{model.amtPaid}}/{{model.amt}}</h5>
+    <div>
+      {{#if isEditingAmt}}
+        {{input class="hotriz-item" type="text" value=model.amt}}
+        <button class="hotriz-item" {{action 'doneEditingAmt'}}>Done</button>
+      {{else}}
+        <button {{action 'editAmt'}}>Edit</button>
+      {{/if}}
+    </div>
+    <div class='span8'>
+      <table class='table'>
+        <thead>
+          <tr>
+            <th class="span3">People Involved</th>
+            <th class="span4">Paid</th>
+          </tr>
+        </thead>
+        {{#each model.peopleInvolved}}
+        <tr><td class="span3">
+          {{name}}
+        </td><td class="span4">
+          {{input type="text" class="span2" value=paid}} ({{toPay}})
+        </td><td>
+          <span class="link" {{action 'removePerson' this}}>Remove</span>
+        </td></tr>
+        {{/each}}
+      </table>
+      <table class='table'>
+        <thead>
+          <tr><th class="span3">People Uninvolved</th></tr>
+        </thead>
+        {{#each model.peopleUninvolved}}
+        <tr><td class="span3">
+          {{name}}
+        </td><td class="span4">
+          <span class="link" {{action 'addPerson' this}}>Add</span>
+        </td></tr>
+        {{/each}}
+      </table>
+    </div>
+    <div class='below-the-fold'>
+    </div>
+  </script>
+
+  <script src="js/libs/jquery-1.10.2.js"></script>
+  <script src="js/libs/handlebars-1.1.2.js"></script>
+  <script src="js/libs/ember.js"></script>
+  <script src="js/libs/ember-data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/objects.js"></script>
+  <script src="js/routes.js"></script>
+  <script src="js/controllers.js"></script>
+  <!-- to activate the test runner, add the "?test" query string parameter -->
+  <script src="tests/runner.js"></script>
+</body>
+</html>
