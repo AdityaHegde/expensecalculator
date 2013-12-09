@@ -1,113 +1,157 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>Expense Calculator</title>
+  <meta charset="utf-8">
+  <title>Expense Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/extra.css">
+  <link rel="stylesheet" href="css/bootstrap.css">
 </head>
 <body>
   <script type="text/x-handlebars" data-template-name="index">
-    <div class="container-fluid">
-      <div class="span3">
-        <div class="row-fluid">
+    <header class='page-header'>
+      <h3 class='text-center'>Expense Calculator</h3>
+    </header>
+    <div class="container">
+      <div class="col-md-4 col-sm-4">
+        <div class="people-list">
+          <h4>People</h4>
           <table class='table'>
             <thead>
-              <tr><th>People<br>(Name - Owes|Owed)</th></tr>
+              <tr>
+                <th class="col-md-6 col-sm-6">Name</th>
+                <th class="col-md-3 col-sm-3">Owes</th>
+                <th class="col-md-3 col-sm-3">Owed</th>
+              </tr>
             </thead>
             {{#each model.people}}
-            <tr><td>
-              {{#link-to 'person' this}}{{name}} - {{owes}}|{{owed}}{{/link-to}}
-            </td></tr>
+            <tr>
+              <td class="col-md-6 col-sm-6">{{#link-to 'person' this}}{{name}}{{/link-to}}</td>
+              <td class="col-md-3 col-sm-3">{{owes}}</td>
+              <td class="col-md-3 col-sm-3">{{owed}}</td>
+            </tr>
             {{/each}}
           </table>
-          <div class="span">
+          <div>
           {{#if addingPerson}}
-            <p>Name : {{input type="text" value=newPerson.name}}</p>
-            <button {{action 'savePerson'}}>Save</button>
+            <div class="form-horizontal">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Name</label>
+                <div class="col-sm-10">{{input type="text" class="form-control" value=newPerson.name}}</div>
+              </div>
+            </div>
+            <button class="btn btn-primary" {{action 'savePerson'}}>Save</button>
+            <button class="btn btn-default" {{action 'cancelEditPerson'}}>Cancel</button>
           {{else}}
-            <button {{action 'addPerson'}}>Add</button>
+            <button class="btn btn-default" {{action 'addPerson'}}>Add</button>
           {{/if}}
           </div>
         </div>
-        <div class="row-fluid">
+        <div class="bills-list">
+          <h4>Bills</h4>
           <table class='table'>
             <thead>
-              <tr><th>Bills<br>(Name - Paid/Total)</th></tr>
+              <tr>
+                <th class="col-md-6 col-sm-6">Name</th>
+                <th class="col-md-3 col-sm-3">Paid</th>
+                <th class="col-md-3 col-sm-3">Total</th>
+              </tr>
             </thead>
             {{#each model.bills}}
-            <tr><td>
-              {{#link-to 'bill' this}}{{name}} - {{amtPaid}}/{{amt}}{{/link-to}}
-            </td></tr>
+            <tr>
+              <td class="col-md-6 col-sm-6">{{#link-to 'bill' this}}{{name}}{{/link-to}}</td>
+              <td class="col-md-3 col-sm-3">{{amtPaid}}</td>
+              <td class="col-md-3 col-sm-3">{{amt}}</td>
+            </tr>
             {{/each}}
+            <tfoot>
+              <tr>
+                <td class="col-md-6 col-sm-6">Total</td>
+                <td class="col-md-3 col-sm-3">{{amtPaid}}</td>
+                <td class="col-md-3 col-sm-3">{{totalAmt}}</td>
+              </tr>
+            </tfoot>
           </table>
-          <div class="span">
+          <div>
           {{#if addingBill}}
-            <table>
-              <tr><td>Name</td><td>{{input type="text" value=newBill.name}}</td></tr>
-              <tr><td>Amount</td><td>{{input type="text" value=newBill.amt}}</td></tr>
-              <tr><td><button {{action 'saveBill'}}>Save</button></td></tr>
-            </table>
+            <div class="form-horizontal">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Name</label>
+                <div class="col-sm-10">{{input type="text" class="form-control" value=newBill.name}}</div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Amount</label>
+                <div class="col-sm-10">{{input type="text" class="form-control" value=newBill.amt}}</div>
+              </div>
+            </div>
+            <button class="btn btn-primary" {{action 'saveBill'}}>Save</button>
+            <button class="btn btn-default" {{action 'cancelEditBill'}}>Cancel</button>
           {{else}}
-            <button {{action 'addBill'}}>Add</button>
+            <button class="btn btn-default" {{action 'addBill'}}>Add</button>
           {{/if}}
           </div>
         </div>
-        <div class="row-fluid">
-          Total : {{amtPaid}}/{{totalAmt}}
-        </div>
       </div>
-      <div class="span5">
+      <div class="col-md-8 col-sm-8">
         {{outlet}}
       </div>
     </div>
+    <footer class="modal-footer">
+      adityahegderocks@gmail.com - Powered by <a href="http://emberjs.com" target="_blank">ember.js</a>
+    </footer>
   </script>
 
   <script type="text/x-handlebars" id="person">
-    <h4>{{model.name}}</h4>
-    <h5>Owes : {{model.owes}}</h5>
-    <h5>Owed : {{model.owed}}</h5>
+    <h3>{{model.name}}</h3>
+    <h4><small>Owes : {{model.owes}}</small></h4>
+    <h4><small>Owed : {{model.owed}}</small></h4>
   </script>
 
   <script type="text/x-handlebars" id="bill">
-    <h4>{{model.name}}</h4>
-    <h5>Amount : {{model.amtPaid}}/{{model.amt}}</h5>
+    <h3>{{model.name}}</h3>
+    <h4><small>Amount : {{model.amtPaid}}/{{model.amt}}</small></h4>
     <div>
       {{#if isEditingAmt}}
         {{input class="hotriz-item" type="text" value=model.amt}}
-        <button class="hotriz-item" {{action 'doneEditingAmt'}}>Done</button>
+        <button class="hotriz-item btn btn-default" {{action 'doneEditingAmt'}}>Done</button>
       {{else}}
-        <button {{action 'editAmt'}}>Edit</button>
+        <button class="btn btn-default" {{action 'editAmt'}}>Edit</button>
       {{/if}}
     </div>
-    <div class='span8'>
-      <table class='table'>
+    <div>
+      <table class='table table-responsive'>
         <thead>
           <tr>
-            <th class="span3">People Involved</th>
-            <th class="span4">Paid</th>
+            <th class="col-md-4 col-sm-4">People Involved</th>
+            <th class="col-md-5 col-sm-5">Paid (Share)</th>
+            <th class="col-md-3 col-sm-3"></th>
           </tr>
         </thead>
         {{#each model.peopleInvolved}}
-        <tr><td class="span3">
+        <tr><td class="col-md-4 col-sm-4">
           {{name}}
-        </td><td class="span4">
-          {{input type="text" class="span2" value=paid}} ({{toPay}})
-        </td><td>
-          <span class="link" {{action 'removePerson' this}}>Remove</span>
+        </td><td class="col-md-5 col-sm-5">
+          {{input type="text" class="col-md-5 col-sm-5" value=paid}}<span class="col-md-5 col-sm-5">({{toPay}})</span>
+        </td><td class="col-md-3 col-sm-3">
+          <span class="btn btn-link" {{action 'removePerson' this}}>Remove</span>
         </td></tr>
         {{/each}}
       </table>
-      <table class='table'>
+      <table class='table table-responsive'>
         <thead>
-          <tr><th class="span3">People Uninvolved</th></tr>
+          <tr>
+            <th class="col-md-4 col-sm-4">People Uninvolved</th>
+            <th class="col-md-5 col-sm-5"></th>
+            <th class="col-md-3 col-sm-3"></th>
+          </tr>
         </thead>
         {{#each model.peopleUninvolved}}
-        <tr><td class="span3">
+        <tr><td class="col-md-4 col-sm-4">
           {{name}}
-        </td><td class="span4">
-          <span class="link" {{action 'addPerson' this}}>Add</span>
+        </td><td class="col-md-5 col-sm-5">
+        </td><td class="col-md-3 col-sm-3">
+          <span class="btn btn-link" {{action 'addPerson' this}}>Add</span>
         </td></tr>
         {{/each}}
       </table>

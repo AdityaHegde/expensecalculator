@@ -3,11 +3,14 @@
   margin: 20px;
 }
 
-.link {
-  cursor:pointer;
-  text-decoration:underline;
-}
-
 .hotriz-item {
   vertical-align:middle;
+}
+
+.people-list {
+}
+
+.bills-list {
+  border-top:1px solid #e5e5e5;
+  margin-top:15px;
 }

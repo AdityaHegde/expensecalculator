@@ -72,7 +72,7 @@ Expense.Bill = Ember.Object.extend({
     return Number(this.get("amt")) - Number(this.get("amtPaid"));
   }.property('amtPaid'),
 
-  peopleInvolvedChanged : function() {
+  updateShare : function() {
     var uninvolved = this.get("peopleUninvolved"),
         involved = this.get("peopleInvolved"),
         amt = Number(this.get("amt"));
@@ -82,7 +82,7 @@ Expense.Bill = Ember.Object.extend({
     involved.forEach(function(e, i, a) {
       e.set("toPay", amt / involved.length);
     });
-  }.observes('peopleInvolved.@each'),
+  }.observes('peopleInvolved.@each', 'amt'),
 });
 
 Expense.PersonInvolved = Ember.Object.extend({

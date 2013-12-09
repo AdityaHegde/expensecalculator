@@ -38,6 +38,11 @@ Expense.IndexController = Ember.Controller.extend({
       this.set("addingPerson", false);
     },
 
+    cancelEditPerson : function() {
+      this.get("model").people.removeAt(data.people.length - 1);
+      this.set("addingPerson", false);
+    },
+
     addBill : function() {
       var newBill = Expense.Bill.create({id : data.bills.length, peopleInvolved : [], peopleUninvolved : []});
       this.set("newBill", newBill);
@@ -47,6 +52,11 @@ Expense.IndexController = Ember.Controller.extend({
     },
 
     saveBill : function() {
+      this.set("addingBill", false);
+    },
+
+    cancelEditBill : function() {
+      this.get("model").bills.removeAt(data.bills.length - 1);
       this.set("addingBill", false);
     },
   },
