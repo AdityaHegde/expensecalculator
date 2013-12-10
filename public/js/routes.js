@@ -35,7 +35,7 @@ Expense.CalcRoute = Ember.Route.extend({
   setupController : function(controller, model) {
     if(model.calc_name && model.calc_name !== "new") {
       new XHR({
-        url : "http://localhost:8080/data?reportName="+model.report_name,
+        url : window.location.origin+"/data?reportName="+model.report_name,
         method : "GET",
         callback : function(loaddata) {
           loaddata = JSON.parse(loaddata).result;

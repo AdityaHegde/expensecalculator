@@ -100,20 +100,11 @@ Expense.ReportController = Ember.Controller.extend({
   actions : {
     saveEvent : function() {
       var postData = {people : data.people.copy(), bills : data.bills.copy()};
-      /*postData.bills.forEach(function(e, i, a) {
-        for(var j = 0; j < e.peopleUninvolved.length; j++) {
-          delete e.peopleUninvolved[j].personObj;
-        }
-        for(var j = 0; j < e.peopleInvolved.length; j++) {
-          delete e.peopleInvolved[j].personObj;
-        }
-      });*/
-      console.log(JSON.stringify(postData));
       new XHR({
-        url : "http://localhost:8080/data",
+        url : window.location.origin+"/data",
         params : "calcData="+JSON.stringify(postData),
       }).send();
-      this.set("reportLink", window.location.origin+"/#/calc"+this.get("model").name);
+      this.set("reportLink", window.location.origin+"/#/calc/"+this.get("model").name);
     },
   },
 });
