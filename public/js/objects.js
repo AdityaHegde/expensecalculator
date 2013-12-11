@@ -231,12 +231,12 @@ Expense.ReportObject = Ember.Object.extend({
           var remains = owesStack[0].owes - e.owed;
           if(remains > 0) {
             that.addPersonBalance(owesStack[0].toRecieve, e.name, e.owes);
-            that.addPersonBalance(e.toPay, owedStack[0].name, e.owes);
+            that.addPersonBalance(e.toPay, owesStack[0].name, e.owes);
             e.set("owed", 0);
           }
           else {
             that.addPersonBalance(owesStack[0].toRecieve, e.name, owesStack[0].owes);
-            that.addPersonBalance(e.toPay, owedStack[0].name, owesStack[0].owes);
+            that.addPersonBalance(e.toPay, owesStack[0].name, owesStack[0].owes);
             e.set("owed", e.owed - owesStack[0].owes);
             owesStack[0].set("owes", 0);
             owesStack.shift();
