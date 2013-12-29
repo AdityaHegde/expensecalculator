@@ -51,7 +51,7 @@ Expense.Bill = Ember.Object.extend({
         id = this.get("id");
     people.forEach(function(e) {
       if(!peopleInvolved.findBy('name', e.name) && !peopleUninvolved.findBy('name', e.name)) {
-        peopleUninvolved.addObject(Expense.PersonInvolved.create({
+        peopleInvolved.addObject(Expense.PersonInvolved.create({
           personObj : e,
           name : e.name,
           billId : id,
