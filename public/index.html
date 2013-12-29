@@ -35,7 +35,7 @@
           </thead>
           {{#each model.people}}
           <tr>
-            <td class="col-md-6 col-sm-6">{{#link-to 'person' this}}{{name}}{{/link-to}}</td>
+            <td class="col-md-6 col-sm-6">{{#link-to 'person' this}}-{{name}}-{{/link-to}}</td>
             <td class="col-md-3 col-sm-3">{{owes}}</td>
             <td class="col-md-3 col-sm-3">{{owed}}</td>
           </tr>
@@ -68,7 +68,7 @@
           </thead>
           {{#each model.bills}}
           <tr>
-            <td class="col-md-6 col-sm-6">{{#link-to 'bill' this}}{{name}}{{/link-to}}</td>
+            <td class="col-md-6 col-sm-6">{{#link-to 'bill' this}}-{{name}}-{{/link-to}}</td>
             <td class="col-md-3 col-sm-3">{{amtPaid}}</td>
             <td class="col-md-3 col-sm-3">{{amt}}</td>
           </tr>
