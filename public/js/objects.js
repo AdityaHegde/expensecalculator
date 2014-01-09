@@ -123,25 +123,6 @@ Expense.PersonFinal = Ember.Object.extend({
 
   owesOwedChanged : function() {
     var personObj = this.get("personObj");
-    /*TODO: selectively change the objects
-        toPay = this.get("toPay"),
-        toRecieve = this.get("toRecieve"),
-        owes = personObj.owes - toPay.reduce(function(s, e, i, a) {
-          return s + e.amt;
-        }, 0);
-        owed = personObj.owed - toRecieve.reduce(function(s, e, i, a) {
-          return s + e.amt;
-        }, 0);
-    if(owes < 0) {
-      owed += -owes;
-      owes = 0;
-    }
-    if(owed < 0) {
-      owes += -owed;
-      owed = 0;
-    }
-    this.set("owes", owes);
-    this.set("owed", owed);*/
     this.set("toPay", []);
     this.set("owes", personObj.owes);
     this.set("toRecieve", []);

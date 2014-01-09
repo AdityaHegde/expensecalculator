@@ -1,21 +1,28 @@
 {
     "name": "expensecalculator",
-    "subdomain": "expensecalculator",
+    "description" : "Expense Calculator !!",
     "version": "0.1.0",
     "author": "Aditya Hegde",
+    "main" : "server.js",
     "scripts": {
-        "start": "node ./bin/server.js"
+        "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "files": [
-        "./bin/node_modules"
+    "repository" : {
+      "type" : "git",
+      "url" : "https://github.com/AdityaHegde/expensecalculator"
+    },
+    "keywords" : [
+      "heroku",
+      "expense",
+      "calculator",
+      "nodesjs",
+      "emberjs"
     ],
-    "dependencies": {
-        "express": "3.x",
-        "mime": "x",
-        "mongodb": "x",
-        "mongoose": "x"
-    },
     "engines": {
-        "node": "0.10.x"
+      "node": "0.10.x"
+    },
+    "licence" : "MIT",
+    "bugs" : {
+      "url" : "https://github.com/AdityaHegde/expensecalculator/issues"
     }
 }

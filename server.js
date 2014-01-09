@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 var express = require("express"),
     dataHandler = require("data_handler"),
     app = express();
@@ -13,4 +11,4 @@ app.post("/data", dataHandler.handlerPost);
 
 app.use("/", express.static('./public'));
 
-app.listen(8080);
+app.listen(process.env.PORT || 5000);
