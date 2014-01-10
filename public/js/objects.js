@@ -249,3 +249,27 @@ Expense.ReportObject = Ember.Object.extend({
 });
 
 var report = Expense.ReportObject.create({data : [], people : [], name : ""});
+
+Expense.EmberObject = Ember.Object.extend({
+  propertyWillChange : function() {
+    console.log("--");
+    console.log(arguments);
+  },
+});
+
+Expense.ItemObject = Expense.EmberObject.extend({
+  itm : "",
+});
+Expense.TestObject = Expense.EmberObject.extend({
+  items : function(key, val) {
+    if(arguments.length > 1) {
+      for(var i = 0; i < val.length; i++) {
+        if(!(val[i] instanceof Expense.ItemObject)) {
+          val[i] = Expense.ItemObject.create(val[i]);
+        }
+      }
+      return val;
+    }
+  }.property(),
+  tmp : false,
+});

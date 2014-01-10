@@ -67,3 +67,9 @@ Expense.CalcRoute = Ember.Route.extend({
     controller.set("model", data);
   },
 });
+
+Expense.TestRoute = Ember.Route.extend({
+  model : function() {
+    return Expense.TestObject.create({items : [{itm : 'a'}, {itm : 'b'}, {itm : 'c'}]});
+  },
+});

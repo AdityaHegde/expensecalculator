@@ -1,3 +1,14 @@
+Expense.TestController = Ember.Controller.extend({
+  actions : {
+    switch : function() {
+      var model = this.get("model");
+      model.set("tmp", !model.get("tmp"));
+      //model.set("items", [{itm : 'c'}, {itm : 'b'}, {itm : 'a'}]);
+      model.get("items").pushObject({itm : 'd'});
+    },
+  },
+});
+
 Expense.CalcController = Ember.Controller.extend({
   addingPerson : false,
   newPerson : null,

@@ -13,12 +13,20 @@
     <header class='page-header'>
       <h3 class='text-center'>Expense Calculator</h3>
     </header>
+    {{#link-to 'test'}}Test{{/link-to}}
     <div class="container">
       {{outlet}}
     </div>
     <footer class="modal-footer">
       <a href="https://github.com/AdityaHegde/expensecalculator" target="_blank">Expense Calculator</a> - Powered by <a href="https://www.nodejitsu.com/" target="_blank">Nodejitsu</a> and <a href="http://emberjs.com" target="_blank">ember.js</a>
     </footer>
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="test">
+    {{#each model.items}}
+      --{{itm}}--<br>
+    {{/each}}
+    <button {{action 'switch'}}>Switch</button>
   </script>
 
   <script type="text/x-handlebars" data-template-name="calc">

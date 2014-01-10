@@ -10,5 +10,6 @@ Expense.Router.map(function() {
       this.resource('person', { path : 'person/:person_id' });
       this.resource('report');
     });
+    this.resource('test');
   });
 });
