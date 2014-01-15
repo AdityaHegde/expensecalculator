@@ -1,48 +1,18 @@
-Expense.TestController = Ember.Controller.extend({
-  actions : {
-    switch : function() {
-      var model = this.get("model");
-      model.set("tmp", !model.get("tmp"));
-      //model.set("items", [{itm : 'c'}, {itm : 'b'}, {itm : 'a'}]);
-      model.get("items").pushObject({itm : 'd'});
-    },
-  },
+Expense.IndexController = Ember.Controller.extend({
 });
 
-Expense.CalcController = Ember.Controller.extend({
+Expense.PERSON_COUNT = 0;
+Expense.PeopleController = Ember.Controller.extend({
   addingPerson : false,
   newPerson : null,
-  addingBill : false,
-  newBill : null,
-
-  totalAmt : function() {
-    var bills = this.get("model").get("bills");
-    return bills.reduce(function(s, e, i, a) {
-      return s + Number(e.amt);
-    }, 0);
-  }.property('model.bills.@each.amt'),
-
-  amtPaid : function() {
-    var bills = this.get("model").get("bills");
-    return bills.reduce(function(s, e, i, a) {
-      return s + Number(e.amtPaid || 0);
-    }, 0);
-  }.property('model.bills.@each.amtPaid'),
-
-  amtRemained : function() {
-    return Number(this.get("totalAmt")) - Number(this.get("amtPaid"));
-  }.property('amtPaid'),
-
-  adding : function() {
-    return this.get("addingPerson") || this.get("addingBill");
-  }.property('addingPerson', 'addingBill'),
 
   actions : {
     addPerson : function() {
-      var newPerson = Expense.Person.create({id : data.people.length, bills : []});
+      var newPerson = Expense.Person.create({id : (Expense.PERSON_COUNT++)+"", events : []});
       this.set("newPerson", newPerson);
       this.set("addingPerson", true);
-      this.get("model").people.pushObject(newPerson);
+      this.get("model").pushObject(newPerson);
+      this.transitionToRoute('person', newPerson.id);
     },
 
     savePerson : function() {
@@ -50,25 +20,53 @@ Expense.CalcController = Ember.Controller.extend({
     },
 
     cancelEditPerson : function() {
-      this.get("model").people.removeAt(data.people.length - 1);
+      var model = this.get("model");
+      model.removeAt(model.length - 1);
       this.set("addingPerson", false);
     },
+  },
+});
 
-    addBill : function() {
-      var newBill = Expense.Bill.create({id : data.bills.length, peopleInvolved : [], peopleUninvolved : [], amt : 0});
-      this.set("newBill", newBill);
-      this.set("addingBill", true);
-      this.get("model").bills.addObject(newBill);
-      newBill.updatePeople();
+Expense.EVENT_COUNT = 0;
+Expense.EventsController = Ember.Controller.extend({
+  addingEvent : false,
+  newEvent : null,
+
+  totalAmt : function() {
+    var events = this.get("model");
+    return events.reduce(function(s, e, i, a) {
+      return s + Number(e.amt);
+    }, 0);
+  }.property('model.@each.amt'),
+
+  amtPaid : function() {
+    var events = this.get("model");
+    return events.reduce(function(s, e, i, a) {
+      return s + Number(e.get("amtPaid") || 0);
+    }, 0);
+  }.property('model.@each.amtPaid'),
+
+  amtRemained : function() {
+    return Number(this.get("totalAmt")) - Number(this.get("amtPaid"));
+  }.property('amtPaid'),
+
+  actions : {
+    addEvent : function() {
+      var newEvent = Expense.Event.create({id : (Expense.EVENT_COUNT++)+"", peopleAttended : [], amt : 0});
+      this.set("newEvent", newEvent);
+      this.set("addingEvent", true);
+      this.get("model").addObject(newEvent);
+      this.transitionToRoute('event', newEvent.id);
     },
 
-    saveBill : function() {
-      this.set("addingBill", false);
+    saveEvent : function() {
+      this.set("addingEvent", false);
     },
 
-    cancelEditBill : function() {
-      this.get("model").bills.removeAt(data.bills.length - 1);
-      this.set("addingBill", false);
+    cancelEditEvent : function() {
+      var model = this.get("model");
+      model.removeAt(model.length - 1);
+      this.set("addingEvent", false);
     },
   },
 });
@@ -76,8 +74,8 @@ Expense.CalcController = Ember.Controller.extend({
 Expense.PersonController = Ember.Controller.extend({
 });
 
-Expense.BillController = Ember.Controller.extend({
-  people : data.people,
+Expense.EventController = Ember.Controller.extend({
+  people : data.get("people"),
   isEditingAmt : false,
 
   actions : {
@@ -90,16 +88,19 @@ Expense.BillController = Ember.Controller.extend({
     },
 
     removePerson : function(person) {
-      var uninvolved = this.get("model").peopleUninvolved,
-          involved = this.get("model").peopleInvolved;
-      uninvolved.addObject(person);
+      var involved = this.get("model").get("peopleAttended"),
+          personEvents = person.get("personObj").get("events");
+      personEvents.removeObject(personEvents.findBy('id', this.get("model").get("id")));
       involved.removeObject(person);
     },
 
     addPerson : function(person) {
-      var uninvolved = this.get("model").peopleUninvolved,
-          involved = this.get("model").peopleInvolved;
-      uninvolved.removeObject(person);
+      var involved = this.get("model").get("peopleAttended");
+      person.get("personObj").get("events").addObject(Expense.PersonEvent.create({
+        eventId : this.get("model").get("id"),
+        owes : 0,
+        owed : 0,
+      }));
       involved.addObject(person);
     },
   },
@@ -109,13 +110,32 @@ Expense.ReportController = Ember.Controller.extend({
   reportLink : "",
 
   actions : {
-    saveEvent : function() {
-      var postData = {people : data.people.copy(), bills : data.bills.copy()};
-      new XHR({
+    saveOuting : function() {
+      var dataobj = data.getProperties('people', 'events', 'outingName'),
+          postData = JSON.parse(JSON.stringify(dataobj)),
+          that = this, name = this.get("model").name;
+      for(var i = 0; i < postData.people.length; i++) {
+        var person = dataobj.people.findBy('id', postData.people[i].id);
+        postData.people[i].events = person.get("events");
+      }
+      for(var i = 0; i < postData.events.length; i++) {
+        var event = dataobj.events.findBy('id', postData.events[i].id);
+        delete postData.events[i].people;
+        postData.events[i].peopleAttended = JSON.parse(JSON.stringify(event.get("peopleAttended")));
+        for(var j = 0; j < postData.events[i].peopleAttended.length; j++) {
+          delete postData.events[i].peopleAttended[j].personObj;
+        }
+      }
+      postData.outingName = name;
+      console.log(JSON.stringify(postData));
+      $.ajax({
         url : window.location.origin+"/data",
-        params : "calcData="+JSON.stringify(postData),
-      }).send();
-      this.set("reportLink", window.location.origin+"/#/calc/"+this.get("model").name);
+        method : "POST",
+        data : { outingData : JSON.stringify(postData) },
+      }).done(function(retData) {
+        that.set("reportLink", window.location.origin+"/#/calc/"+name);
+        data.set("outingName", name);
+      });
     },
   },
 });

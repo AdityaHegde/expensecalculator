@@ -4,12 +4,14 @@ var
 attr = DS.attr;
 
 Expense.Router.map(function() {
-  this.resource('index', { path : '' }, function() {
-    this.resource('calc', { path : 'calc/:calc_name' }, function() {
-      this.resource('bill', { path : 'bill/:bill_id' });
-      this.resource('person', { path : 'person/:person_id' });
-      this.resource('report');
+  this.resource('index', { path : ':outing_name' }, function() {
+    this.resource('events', { path : 'events' }, function() {
+      this.resource('event', { path : ':event_id' });
     });
-    this.resource('test');
+    this.resource('people', { path : 'people' }, function() {
+      this.resource('person', { path : ':person_id' });
+    });
+    this.resource('report');
   });
+  this.resource('redirect', { path : '' });
 });

@@ -1,8 +1,15 @@
 Expense.DataObject = Ember.Object.extend({
-  people : [],
-  bills : [],
+  outingName : "",
+  people : Utils.hasMany('Expense.Person'),
+  events : Utils.hasMany('Expense.Event'),
 });
-var data = Expense.DataObject.create({});
+var data = Expense.DataObject.create({people : [], events : []});
+
+Expense.PersonEvent = Ember.Object.extend({
+  owes : 0,
+  owed : 0,
+  eventId : 0,
+});
 
 Expense.Person = Ember.Object.extend({
   name : "",
@@ -12,75 +19,93 @@ Expense.Person = Ember.Object.extend({
   owed : 0,
 
   owedOrOwesChanges : function() {
-    var bills = this.get("bills");
-        owed = bills.reduce(function(s, e, i, a) {
+    var events = this.get("events");
+        owed = events.reduce(function(s, e, i, a) {
           return s + Number(e.owes);
         }, 0),
-        owes = bills.reduce(function(s, e, i, a) {
+        owes = events.reduce(function(s, e, i, a) {
           return s + Number(e.owed);
         }, 0),
         diff = owed - owes;
     this.set("owes", (diff > 0 ? diff : 0));
     this.set("owed", (diff < 0 ? -diff : 0));
-  }.observes('bills.@each.owes', 'bills.@each.owed'),
+  }.observes('events.@each.owes', 'events.@each.owed'),
 
-  bills : [],
+  events : Utils.hasMany(Expense.PersonEvent),
 });
 
-Expense.PersonBill = Ember.Object.extend({
-  owes : 0,
-  owed : 0,
-  billId : 0,
+Expense.PersonAttended = Ember.Object.extend({
+  personObj : null,
+  name : "",
+  toPay : 0,
+  paid : 0,
+  eventId : 0,
+
+  updateOwesOwed : function() {
+    var toPay = this.get("toPay"), paid = this.get("paid") || 0,
+        owed = paid - toPay, owes = toPay - paid,
+        personEvents = this.get("personObj").get("events"), eventId = this.get("eventId");
+    owed = owed < 0 ? 0 : owed;
+    owes = owes < 0 ? 0 : owes;
+    personEvents[eventId].set("owes", owes);
+    personEvents[eventId].set("owed", owed);
+  }.observes('toPay', 'paid'),
+
+  setPersonObj : function() {
+    var personObj = this.get("personObj");
+    if(!personObj) {
+      personObj = data.get("people").findBy('name', this.get("name"));
+      this.set("personObj", personObj);
+    }
+  }.observes('name'),
+
+  nameChanged : function() {
+    this.set("name", this.get("personObj").name);
+  }.observes('personObj.name'),
 });
 
-Expense.Bill = Ember.Object.extend({
+Expense.Event = Ember.Object.extend({
   id : 0,
   name : "",
   amt : 0,
 
-  people : data.people,
+  people : data.get("people"),
 
-  peopleUninvolved : [],
+  peopleAttended : Utils.hasMany(Expense.PersonAttended),
 
-  peopleInvolved : [],
-
-  updatePeople : function() {
-    var peopleInvolved = this.get("peopleInvolved"),
-        peopleUninvolved = this.get("peopleUninvolved"),
+  peopleNotAttended : function() {
+    var peopleAttended = this.get("peopleAttended"),
+        peopleNotAttended = [],
         people = this.get("people"),
         id = this.get("id");
     people.forEach(function(e) {
-      if(!peopleInvolved.findBy('name', e.name) && !peopleUninvolved.findBy('name', e.name)) {
-        peopleInvolved.addObject(Expense.PersonInvolved.create({
+      if(!peopleAttended.findBy('name', e.name)) {
+        peopleNotAttended.push(Expense.PersonAttended.create({
           personObj : e,
           name : e.name,
-          billId : id,
+          eventId : id,
           toPay : 0,
           paid : 0,
         }));
-        e.get("bills").addObject(Expense.PersonBill.create({
-          billId : id,
-          owes : 0,
-          owed : 0,
-        }));
       }
     });
-  }.observes('people.@each'),
+    return peopleNotAttended;
+  }.property('people.@each', 'peopleAttended.@each'),
 
   amtPaid : function() {
-    var peopleInvolved = this.get("peopleInvolved");
-    return peopleInvolved.reduce(function(s, e, i, a) {
+    var peopleAttended = this.get("peopleAttended");
+    return peopleAttended.reduce(function(s, e, i, a) {
       return s + Number(e.paid);
     }, 0);
-  }.property('peopleInvolved.@each.paid'),
+  }.property('peopleAttended.@each.paid'),
 
   amtRemained : function() {
     return Number(this.get("amt")) - Number(this.get("amtPaid"));
   }.property('amtPaid'),
 
   updateShare : function() {
-    var uninvolved = this.get("peopleUninvolved"),
-        involved = this.get("peopleInvolved"),
+    var uninvolved = this.get("peopleNotAttended"),
+        involved = this.get("peopleAttended"),
         amt = Number(this.get("amt"));
     uninvolved.forEach(function(e, i, a) {
       e.set("toPay", 0);
@@ -88,29 +113,7 @@ Expense.Bill = Ember.Object.extend({
     involved.forEach(function(e, i, a) {
       e.set("toPay", amt / involved.length);
     });
-  }.observes('peopleInvolved.@each', 'amt'),
-});
-
-Expense.PersonInvolved = Ember.Object.extend({
-  personObj : null,
-  name : "",
-  toPay : 0,
-  paid : 0,
-  billId : 0,
-
-  observerTest : function() {
-    var toPay = this.get("toPay"), paid = this.get("paid") || 0,
-        owed = paid - toPay, owes = toPay - paid,
-        personBills = this.get("personObj").get("bills"), billId = this.get("billId");
-    owed = owed < 0 ? 0 : owed;
-    owes = owes < 0 ? 0 : owes;
-    personBills[billId].set("owes", owes);
-    personBills[billId].set("owed", owed);
-  }.observes('toPay', 'paid'),
-
-  nameChanged : function() {
-    this.set("name", this.get("personObj").name);
-  }.observes('personObj.name'),
+  }.observes('peopleAttended.@each', 'amt'),
 });
 
 Expense.PersonFinal = Ember.Object.extend({
@@ -163,14 +166,20 @@ Expense.PersonBalanceFinal = Ember.Object.extend({
 });
 
 Expense.ReportObject = Ember.Object.extend({
-  data : null,
+  peopleObjs : null,
 
   name : "",
   owes : 0,
   owed : 0,
-  people : [],
-
-  stopCalcFlag : false,
+  people : function() {
+    var peopleObjs = this.get("peopleObjs"),
+        people = [];
+    peopleObjs.forEach(function(e, i, a) {
+      people.push(Expense.PersonFinal.create({name : e.name, toPay : [], toRecieve : [], owes : e.owes, owed : e.owed, personObj : e}));
+    });
+    this.updateShare(people);
+    return people;
+  }.property('peopleObjs.@each'),
 
   addPersonBalance : function(arrObj, name, amt) {
     var e = arrObj.findBy('name', name);
@@ -185,13 +194,10 @@ Expense.ReportObject = Ember.Object.extend({
     }
   },
 
-  updateShare : function(data) {
-    var people = this.get("people"),
-        owedStack = [],
+  updateShare : function(people) {
+    var owedStack = [],
         owesStack = [],
         that = this;
-    if(this.get("stopCalcFlag")) return;
-    this.set("stopCalcFlag", true);
     people.forEach(function(e, i, a) {
       if(e.owes > 0) {
         while(owedStack.length > 0 && e.owes > 0) {
@@ -230,46 +236,5 @@ Expense.ReportObject = Ember.Object.extend({
         if(e.owed > 0) owedStack.push(e);
       }
     });
-    this.set("stopCalcFlag", false);
-  }.observes('people.@each.owes', 'people.@each.owed'),
-
-  updatePeople : function() {
-    var data = this.get("data"),
-        people = this.get("people"),
-        owedStack = [],
-        owesStack = [];
-    data.people.forEach(function(e, i, a) {
-      var person = people.findBy('name', e.name);
-      if(!person) {
-        person = Expense.PersonFinal.create({name : e.name, toPay : [], toRecieve : [], owes : e.owes, owed : e.owed, personObj : e});
-        people.addObject(person);
-      }
-    });
-  }.observes('data.people.@each'),
-});
-
-var report = Expense.ReportObject.create({data : [], people : [], name : ""});
-
-Expense.EmberObject = Ember.Object.extend({
-  propertyWillChange : function() {
-    console.log("--");
-    console.log(arguments);
   },
-});
-
-Expense.ItemObject = Expense.EmberObject.extend({
-  itm : "",
-});
-Expense.TestObject = Expense.EmberObject.extend({
-  items : function(key, val) {
-    if(arguments.length > 1) {
-      for(var i = 0; i < val.length; i++) {
-        if(!(val[i] instanceof Expense.ItemObject)) {
-          val[i] = Expense.ItemObject.create(val[i]);
-        }
-      }
-      return val;
-    }
-  }.property(),
-  tmp : false,
 });

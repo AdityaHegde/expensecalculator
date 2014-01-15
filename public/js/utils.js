@@ -1,21 +1,51 @@
-function XHR(config) {
-  this.method = config.method || "POST";
-  this.url = config.url;
-  this.params = config.params;
-  this.async = true;
-  this.callback = config.callback;
+Utils = Ember.Namespace.create();
+
+Utils.deepSearchArray = function(d, e, k, ak) { //d - data, e - element, k - key, ak - array key
+  if(e === undefined || e === null) return false;
+  if(d[k] === e) return true;
+  if(d[ak]) {
+    for(var i = 0; i < d[ak].length; i++) {
+      if(Utils.deepSearchArray(d[ak][i], e, k, ak)) return true;
+    }
+  }
+  return false;
 }
 
-XHR.prototype.send = function() {
-  var xmlhttp = new XMLHttpRequest(), that = this;
-  if(this.callback) {
-    xmlhttp.onreadystatechange = function () {
-      if (xmlhttp.readyState == 4) {
-        that.callback(xmlhttp.responseText);
+Utils.hasMany = function(modelClass) {
+  modelClass = modelClass || Ember.Object;
+  var ret = function(key, newval) {
+    if(Ember.typeOf(modelClass) == 'string') {
+      var split = modelClass.split("."), e = window;
+      for(var i = 0; i < split.length; i++) {
+        e = e[split[i]];
       }
-    };
+      if(!e) return [];
+      modelClass = e;
+    }
+    if(arguments.length > 1) {
+      if(newval.length) {
+        for(var i = 0; i < newval.length; i++) {
+          if(!(newval[i] instanceof modelClass)) newval.splice(i, 1, modelClass.create(newval[i]));
+        }
+      }
+      return newval;
+    }
+  }.property();
+  return ret;
+}
+
+Utils.recursivelyEmberify = function(obj) {
+  if(Ember.typeOf(obj) === 'object' || Ember.typeOf(obj) === 'array') {
+    for(var k in obj) {
+      if(obj.hasOwnProperty(k)) obj[k] = recursivelyEmberify(obj[k]);
+    }
+    return Ember.Object.create(obj);
   }
-  xmlhttp.open(this.method, this.url, this.async);
-  xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  xmlhttp.send(this.params);
-};
+  else if(Ember.typeOf(obj) === 'array') {
+    for(var i = 0; i < obj.length; i++) {
+      obj[i] = recursivelyEmberify(obj[i]);
+    }
+    return Ember.MutableArray.create(obj);
+  }
+  return obj;
+}
