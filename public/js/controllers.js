@@ -1,4 +1,10 @@
 Expense.IndexController = Ember.Controller.extend({
+  actions : {
+    navbar_click : function(id) {
+      $('.navbar li.active').removeClass('active');
+      $('#'+id).addClass('active');
+    },
+  },
 });
 
 Expense.PERSON_COUNT = 0;
@@ -12,11 +18,11 @@ Expense.PeopleController = Ember.Controller.extend({
       this.set("newPerson", newPerson);
       this.set("addingPerson", true);
       this.get("model").pushObject(newPerson);
-      this.transitionToRoute('person', newPerson.id);
     },
 
     savePerson : function() {
       this.set("addingPerson", false);
+      this.transitionToRoute('person', this.get("newPerson").id);
     },
 
     cancelEditPerson : function() {
@@ -56,11 +62,11 @@ Expense.EventsController = Ember.Controller.extend({
       this.set("newEvent", newEvent);
       this.set("addingEvent", true);
       this.get("model").addObject(newEvent);
-      this.transitionToRoute('event', newEvent.id);
     },
 
     saveEvent : function() {
       this.set("addingEvent", false);
+      this.transitionToRoute('event', this.get("newEvent").id);
     },
 
     cancelEditEvent : function() {

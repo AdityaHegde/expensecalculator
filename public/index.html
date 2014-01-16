@@ -22,9 +22,9 @@
       </div>
       <div class="collapse navbar-collapse" id="navbar-items">
         <ul class="nav navbar-nav">
-          <li>{{#link-to 'people'}}People{{/link-to}}</li>
-          <li>{{#link-to 'events'}}Events{{/link-to}}</li>
-          <li>{{#link-to 'report'}}Report{{/link-to}}</li>
+          <li class="active" id="people-link" {{action 'navbar_click' "people-link"}}>{{#link-to 'people'}}People{{/link-to}}</li>
+          <li id="events-link" {{action 'navbar_click' "events-link"}}>{{#link-to 'events'}}Events{{/link-to}}</li>
+          <li id="report-link" {{action 'navbar_click' "report-link"}}>{{#link-to 'report'}}Report{{/link-to}}</li>
         </ul>
       </div>
     </nav>
@@ -40,22 +40,22 @@
   </script>
 
   <script type="text/x-handlebars" id="people">
-    <div class="col-md-4 col-sm-4">
+    <div class="col-sm-4">
       <div class="people-list">
         <h4>People</h4>
         <table class='table'>
           <thead>
             <tr>
-              <th class="col-md-6 col-sm-6">Name</th>
-              <th class="col-md-3 col-sm-3">Owes</th>
-              <th class="col-md-3 col-sm-3">Owed</th>
+              <th class="col-sm-6">Name</th>
+              <th class="col-sm-3">Owes</th>
+              <th class="col-sm-3">Owed</th>
             </tr>
           </thead>
           {{#each model}}
           <tr>
-            <td class="col-md-6 col-sm-6">{{#link-to 'person' this}}-{{name}}-{{/link-to}}</td>
-            <td class="col-md-3 col-sm-3">{{owes}}</td>
-            <td class="col-md-3 col-sm-3">{{owed}}</td>
+            <td class="col-sm-6">{{#link-to 'person' this}}-{{name}}-{{/link-to}}</td>
+            <td class="col-sm-3">{{owes}}</td>
+            <td class="col-sm-3">{{owed}}</td>
           </tr>
           {{/each}}
         </table>
@@ -64,7 +64,7 @@
           <div class="form-horizontal">
             <div class="form-group">
               <label class="col-sm-2 control-label">Name</label>
-              <div class="col-sm-10">{{input type="text" class="form-control" value=newPerson.name}}</div>
+              <div class="col-sm-10">{{input type="text" class="form-control" value=newPerson.name autofocus="autofocus"}}</div>
             </div>
           </div>
           <button class="btn btn-primary" {{action 'savePerson'}}>Save</button>
@@ -75,7 +75,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-8 col-sm-8">
+    <div class="col-sm-8">
       {{outlet}}
     </div>
   </script>
@@ -87,29 +87,29 @@
   </script>
 
   <script type="text/x-handlebars" data-template-name="events">
-    <div class="col-md-4 col-sm-4">
+    <div class="col-sm-4">
       <div class="events-list">
         <h4>Events</h4>
         <table class='table'>
           <thead>
             <tr>
-              <th class="col-md-6 col-sm-6">Name</th>
-              <th class="col-md-3 col-sm-3">Paid</th>
-              <th class="col-md-3 col-sm-3">Total</th>
+              <th class="col-sm-6">Name</th>
+              <th class="col-sm-3">Paid</th>
+              <th class="col-sm-3">Total</th>
             </tr>
           </thead>
           {{#each model}}
           <tr>
-            <td class="col-md-6 col-sm-6">{{#link-to 'event' this}}-{{name}}-{{/link-to}}</td>
-            <td class="col-md-3 col-sm-3">{{amtPaid}}</td>
-            <td class="col-md-3 col-sm-3">{{amt}}</td>
+            <td class="col-sm-6">{{#link-to 'event' this}}-{{name}}-{{/link-to}}</td>
+            <td class="col-sm-3">{{amtPaid}}</td>
+            <td class="col-sm-3">{{amt}}</td>
           </tr>
           {{/each}}
           <tfoot>
             <tr>
-              <td class="col-md-6 col-sm-6">Total</td>
-              <td class="col-md-3 col-sm-3">{{amtPaid}}</td>
-              <td class="col-md-3 col-sm-3">{{totalAmt}}</td>
+              <td class="col-sm-6">Total</td>
+              <td class="col-sm-3">{{amtPaid}}</td>
+              <td class="col-sm-3">{{totalAmt}}</td>
             </tr>
           </tfoot>
         </table>
@@ -118,7 +118,7 @@
           <div class="form-horizontal">
             <div class="form-group">
               <label class="col-sm-2 control-label">Name</label>
-              <div class="col-sm-10">{{input type="text" class="form-control" value=newEvent.name}}</div>
+              <div class="col-sm-10">{{input type="text" class="form-control" value=newEvent.name autofocus="autofocus"}}</div>
             </div>
             <div class="form-group">
               <label class="col-sm-2 control-label">Amount</label>
@@ -133,7 +133,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-8 col-sm-8">
+    <div class="col-sm-8">
       {{outlet}}
     </div>
   </script>
@@ -153,17 +153,17 @@
       <table class='table table-responsive'>
         <thead>
           <tr>
-            <th class="col-md-4 col-sm-4">People Attended</th>
-            <th class="col-md-5 col-sm-5">Paid (Share)</th>
-            <th class="col-md-3 col-sm-3"></th>
+            <th class="col-sm-4">People Attended</th>
+            <th class="col-sm-5">Paid (Share)</th>
+            <th class="col-sm-3"></th>
           </tr>
         </thead>
         {{#each model.peopleAttended}}
-        <tr><td class="col-md-4 col-sm-4">
+        <tr><td class="col-sm-4">
           {{name}}
-        </td><td class="col-md-5 col-sm-5">
-          {{input type="text" class="col-md-5 col-sm-5" value=paid}}<span class="col-md-5 col-sm-5">({{toPay}})</span>
-        </td><td class="col-md-3 col-sm-3">
+        </td><td class="col-sm-5">
+          {{input type="text" class="col-sm-5" value=paid}}<span class="col-sm-5">({{toPay}})</span>
+        </td><td class="col-sm-3">
           <span class="btn btn-link" {{action 'removePerson' this}}>Remove</span>
         </td></tr>
         {{/each}}
@@ -171,16 +171,16 @@
       <table class='table table-responsive'>
         <thead>
           <tr>
-            <th class="col-md-4 col-sm-4">People Not Attended</th>
-            <th class="col-md-5 col-sm-5"></th>
-            <th class="col-md-3 col-sm-3"></th>
+            <th class="col-sm-4">People Not Attended</th>
+            <th class="col-sm-5"></th>
+            <th class="col-sm-3"></th>
           </tr>
         </thead>
         {{#each model.peopleNotAttended}}
-        <tr><td class="col-md-4 col-sm-4">
+        <tr><td class="col-sm-4">
           {{name}}
-        </td><td class="col-md-5 col-sm-5">
-        </td><td class="col-md-3 col-sm-3">
+        </td><td class="col-sm-5">
+        </td><td class="col-sm-3">
           <span class="btn btn-link" {{action 'addPerson' this}}>Add</span>
         </td></tr>
         {{/each}}
@@ -192,36 +192,38 @@
 
   <script type="text/x-handlebars" id="report">
     <table class='table table-responsive form-horizontal'>
-      <div class="form-group">
-        <label class="col-sm-3 control-label">Name of Outing</label>
-        <div class="col-sm-9">{{input type="text" class="form-control" value=model.name}}</div>
+      <div class="form-horizontal">
+        <div class="form-group">
+          <label class="col-sm-3 control-label">Name of Outing</label>
+          <div class="col-sm-9">{{input type="text" class="form-control" value=model.name autofocus="autofocus"}}</div>
+        </div>
       </div>
       <thead>
         <tr>
-          <th class="col-md-2 col-sm-2">Person</th>
-          <th class="col-md-6 col-sm-6">Pay to</th>
-          <th class="col-md-6 col-sm-6">Recieve from</th>
+          <th class="col-sm-2">Person</th>
+          <th class="col-sm-6">Pay to</th>
+          <th class="col-sm-6">Recieve from</th>
         </tr>
       </thead>
       {{#each model.people}}
         <tr>
-          <th class="col-md-2 col-sm-2">{{name}}</th>
-          <th class="col-md-6 col-sm-6">
+          <th class="col-sm-2">{{name}}</th>
+          <th class="col-sm-6">
             <table class='table table-responsive'>
               {{#each toPay}}
                 <tr>
-                  <td class="col-md-7 col-sm-7">{{name}}</td>
-                  <td class="col-md-5 col-sm-5">{{amt}}</td>
+                  <td class="col-sm-7">{{name}}</td>
+                  <td class="col-sm-5">{{amt}}</td>
                 </tr>
               {{/each}}
             </table>
           </th>
-          <th class="col-md-6 col-sm-6">
+          <th class="col-sm-6">
             <table class='table table-responsive'>
               {{#each toRecieve}}
                 <tr>
-                  <td class="col-md-7 col-sm-7">{{name}}</td>
-                  <td class="col-md-5 col-sm-5">{{amt}}</td>
+                  <td class="col-sm-7">{{name}}</td>
+                  <td class="col-sm-5">{{amt}}</td>
                 </tr>
               {{/each}}
             </table>
@@ -234,6 +236,7 @@
   </script>
 
   <script src="js/libs/jquery-1.10.2.js"></script>
+  <script src="js/libs/bootstrap.js"></script>
   <script src="js/libs/handlebars-1.1.2.js"></script>
   <script src="js/libs/ember.js"></script>
   <script src="js/libs/ember-data.js"></script>

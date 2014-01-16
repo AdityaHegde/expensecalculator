@@ -15,3 +15,7 @@ Expense.Router.map(function() {
   });
   this.resource('redirect', { path : '' });
 });
+
+Ember.TextField.reopen({
+  attributeBindings: ['autofocus']
+});
