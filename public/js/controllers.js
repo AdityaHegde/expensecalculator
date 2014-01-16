@@ -139,7 +139,7 @@ Expense.ReportController = Ember.Controller.extend({
         method : "POST",
         data : { outingData : JSON.stringify(postData) },
       }).done(function(retData) {
-        that.set("reportLink", window.location.origin+"/#/calc/"+name);
+        that.set("reportLink", window.location.origin+"/#/"+name);
         data.set("outingName", name);
       });
     },
