@@ -4,16 +4,15 @@ var
 attr = DS.attr;
 
 Expense.Router.map(function() {
-  this.resource('index', { path : ':outing_name' }, function() {
-    this.resource('events', { path : 'events' }, function() {
-      this.resource('event', { path : ':event_id' });
-    });
+  this.resource('outing', { path : ':outing_name' }, function() {
     this.resource('people', { path : 'people' }, function() {
-      this.resource('person', { path : ':person_id' });
+      this.route('person', { path : ':person_id' });
     });
-    this.resource('report');
+    this.resource('events', { path : 'events' }, function() {
+      this.route('event', { path : ':event_id' });
+    });
+    this.route('report');
   });
-  this.resource('redirect', { path : '' });
 });
 
 Ember.TextField.reopen({

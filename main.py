@@ -4,6 +4,7 @@ import json
 
 from google.appengine.api import users
 from google.appengine.ext import ndb
+from google.appengine.api import oauth
 
 import logging
 import webapp2

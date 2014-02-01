@@ -1,58 +1,58 @@
-Expense.RedirectRoute = Ember.Route.extend({
-  model : function(params, transition) {
-    this.transitionTo("index", {outing_name : "new"});
-    return {};
+Expense.IndexRoute = Ember.Route.extend({
+  model : function(params, transtion) {
+    this.transitionTo('outing', 'new');
   },
 });
 
-Expense.IndexRoute = Ember.Route.extend({
-  setupController : function(controller, model) {
-    controller.set("model", data);
-    if(model.outing_name && model.outing_name !== "new") {
-      $.ajax({
-        url : window.location.origin+"/data?outingName="+model.outing_name,
-      }).done(function(loaddata) {
-        data.set('people', loaddata.people);
-        data.set('events', loaddata.events);
-        data.set('outingName', model.outing_name);
-        controller.transitionToRoute('report');
+Expense.OutingRoute = Ember.Route.extend({
+  model : function(params, transition) {
+    if(params.outing_name && params.outing_name !== "new" && data.get("outing_name") != params.outing_name) {
+      return Ember.RSVP.Promise(function(resolve, reject) {
+        $.ajax({url : window.location.origin+"/data?outingName="+params.outing_name}).done(function(retdata) {
+          data.set('people', retdata.people);
+          data.set('events', retdata.events);
+          data.set('outing_name', params.outing_name);
+          resolve(data);
+        }).fail(function(message) {
+          reject(message);
+        })
       });
     }
     else {
-      controller.transitionToRoute('people');
+      return data;
     }
   },
 });
 
 Expense.PeopleRoute = Ember.Route.extend({
-  model : function() {
+  model : function(params, transition) {
     return data.get("people");
   },
 });
 
-Expense.PersonRoute = Ember.Route.extend({
-  model : function(params) {
+Expense.PeoplePersonRoute = Ember.Route.extend({
+  model : function(params, transition) {
     var model = data.get("people").findBy('id', params.person_id);
     if(model) return model;
-    else this.transitionTo('');
+    else this.transitionTo('people');
   },
 });
 
 Expense.EventsRoute = Ember.Route.extend({
-  model : function() {
+  model : function(params, transition) {
     return data.get("events");
   },
 });
 
-Expense.EventRoute = Ember.Route.extend({
-  model : function(params) {
+Expense.EventsEventRoute = Ember.Route.extend({
+  model : function(params, transition) {
     var model = data.get("events").findBy('id', params.event_id);
     if(model) return model;
-    else this.transitionTo('');
+    else this.transitionTo('events');
   },
 });
 
-Expense.ReportRoute = Ember.Route.extend({
+Expense.OutingReportRoute = Ember.Route.extend({
   model : function(params) {
     return Expense.ReportObject.create({peopleObjs : data.get("people"), name : data.outingName});
   },

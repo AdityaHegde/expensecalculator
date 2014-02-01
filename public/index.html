@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="css/bootstrap.css">
 </head>
 <body>
-  <script type="text/x-handlebars" data-template-name="index">
+  <script type="text/x-handlebars" data-template-name="outing">
     <nav class="navbar navbar-default" role="navigation">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-items">
@@ -22,9 +22,9 @@
       </div>
       <div class="collapse navbar-collapse" id="navbar-items">
         <ul class="nav navbar-nav">
-          <li class="active" id="people-link" {{action 'navbar_click' "people-link"}}>{{#link-to 'people'}}People{{/link-to}}</li>
-          <li id="events-link" {{action 'navbar_click' "events-link"}}>{{#link-to 'events'}}Events{{/link-to}}</li>
-          <li id="report-link" {{action 'navbar_click' "report-link"}}>{{#link-to 'report'}}Report{{/link-to}}</li>
+          <li id="people-link">{{#link-to 'people' model.outing_name}}People{{/link-to}}</li>
+          <li id="events-link">{{#link-to 'events' model.outing_name}}Events{{/link-to}}</li>
+          <li id="report-link">{{#link-to 'outing.report' model.outing_name}}Report{{/link-to}}</li>
         </ul>
       </div>
     </nav>
@@ -34,9 +34,6 @@
     <footer class="modal-footer">
       <a href="https://github.com/AdityaHegde/expensecalculator" target="_blank">Expense Calculator v1.0.0</a> - Powered by <a href="http://emberjs.com" target="_blank">ember.js</a>
     </footer>
-  </script>
-
-  <script type="text/x-handlebars" id="redirect">
   </script>
 
   <script type="text/x-handlebars" id="people">
@@ -53,7 +50,7 @@
           </thead>
           {{#each model}}
           <tr>
-            <td class="col-sm-6">{{#link-to 'person' this}}-{{name}}-{{/link-to}}</td>
+            <td class="col-sm-6">{{#link-to 'people.person' this}}-{{name}}-{{/link-to}}</td>
             <td class="col-sm-3">{{owes}}</td>
             <td class="col-sm-3">{{owed}}</td>
           </tr>
@@ -80,7 +77,7 @@
     </div>
   </script>
 
-  <script type="text/x-handlebars" id="person">
+  <script type="text/x-handlebars" id="people/person">
     <h3>{{model.name}}</h3>
     <h4><small>Owes : {{model.owes}}</small></h4>
     <h4><small>Owed : {{model.owed}}</small></h4>
@@ -100,7 +97,7 @@
           </thead>
           {{#each model}}
           <tr>
-            <td class="col-sm-6">{{#link-to 'event' this}}-{{name}}-{{/link-to}}</td>
+            <td class="col-sm-6">{{#link-to 'events.event' this}}-{{name}}-{{/link-to}}</td>
             <td class="col-sm-3">{{amtPaid}}</td>
             <td class="col-sm-3">{{amt}}</td>
           </tr>
@@ -138,7 +135,7 @@
     </div>
   </script>
 
-  <script type="text/x-handlebars" id="event">
+  <script type="text/x-handlebars" id="events/event">
     <h3>{{model.name}}</h3>
     <h4><small>Amount : {{model.amtPaid}}/{{model.amt}}</small></h4>
     <div>
@@ -190,7 +187,7 @@
     </div>
   </script>
 
-  <script type="text/x-handlebars" id="report">
+  <script type="text/x-handlebars" id="outing/report">
     <table class='table table-responsive form-horizontal'>
       <div class="form-horizontal">
         <div class="form-group">

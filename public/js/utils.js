@@ -19,16 +19,17 @@ Utils.hasMany = function(modelClass) {
       for(var i = 0; i < split.length; i++) {
         e = e[split[i]];
       }
-      if(!e) return [];
+      if(!e) return Ember.A([]);
       modelClass = e;
     }
     if(arguments.length > 1) {
-      if(newval.length) {
+      if(newval && newval.length) {
         for(var i = 0; i < newval.length; i++) {
           if(!(newval[i] instanceof modelClass)) newval.splice(i, 1, modelClass.create(newval[i]));
         }
+        return newval;
       }
-      return newval;
+      return Ember.A([]);
     }
   }.property();
   return ret;

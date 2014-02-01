@@ -1,5 +1,5 @@
 Expense.DataObject = Ember.Object.extend({
-  outingName : "",
+  outing_name : "new",
   people : Utils.hasMany('Expense.Person'),
   events : Utils.hasMany('Expense.Event'),
 });
@@ -36,7 +36,20 @@ Expense.Person = Ember.Object.extend({
 
 Expense.PersonAttended = Ember.Object.extend({
   personObj : null,
-  name : "",
+  name : function(key, newval) {
+    var personObj = this.get("personObj");
+    if(arguments.length == 1) {
+      if(personObj) return personObj.name;
+      return "";
+    }
+    else {
+      if(!personObj) {
+        personObj = data.get("people").findBy('name', newval);
+        this.set("personObj", personObj);
+      }
+      return newval;
+    }
+  }.property('personObj.name'),
   toPay : 0,
   paid : 0,
   eventId : 0,
@@ -69,14 +82,14 @@ Expense.Event = Ember.Object.extend({
   name : "",
   amt : 0,
 
-  people : data.get("people"),
+  data : data,
 
   peopleAttended : Utils.hasMany(Expense.PersonAttended),
 
   peopleNotAttended : function() {
     var peopleAttended = this.get("peopleAttended"),
         peopleNotAttended = [],
-        people = this.get("people"),
+        people = this.get("data").get("people"),
         id = this.get("id");
     people.forEach(function(e) {
       if(!peopleAttended.findBy('name', e.name)) {
@@ -90,7 +103,7 @@ Expense.Event = Ember.Object.extend({
       }
     });
     return peopleNotAttended;
-  }.property('people.@each', 'peopleAttended.@each'),
+  }.property('data.people.@each', 'peopleAttended.@each'),
 
   amtPaid : function() {
     var peopleAttended = this.get("peopleAttended");
