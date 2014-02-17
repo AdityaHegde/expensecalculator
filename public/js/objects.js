@@ -57,11 +57,12 @@ Expense.PersonAttended = Ember.Object.extend({
   updateOwesOwed : function() {
     var toPay = this.get("toPay"), paid = this.get("paid") || 0,
         owed = paid - toPay, owes = toPay - paid,
-        personEvents = this.get("personObj").get("events"), eventId = this.get("eventId");
+        personEvents = this.get("personObj").get("events"), eventId = this.get("eventId"),
+        personEvt = personEvents.findBy("eventId", eventId);
     owed = owed < 0 ? 0 : owed;
     owes = owes < 0 ? 0 : owes;
-    personEvents[eventId].set("owes", owes);
-    personEvents[eventId].set("owed", owed);
+    personEvt.set("owes", owes);
+    personEvt.set("owed", owed);
   }.observes('toPay', 'paid'),
 
   setPersonObj : function() {

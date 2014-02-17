@@ -60,6 +60,6 @@ Expense.EventsEventRoute = Ember.Route.extend({
 
 Expense.OutingReportRoute = Ember.Route.extend({
   model : function(params) {
-    return Expense.ReportObject.create({peopleObjs : data.get("people"), name : data.outingName});
+    return Expense.ReportObject.create({peopleObjs : data.get("people"), name : data.get("outing_name")});
   },
 });

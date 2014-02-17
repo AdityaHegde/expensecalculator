@@ -1,14 +1,14 @@
-Expense.PERSON_COUNT = 0;
 Expense.PeopleController = Ember.ArrayController.extend({
   addingPerson : false,
   newPerson : null,
 
   actions : {
     addPerson : function() {
-      var newPerson = Expense.Person.create({id : (Expense.PERSON_COUNT++)+"", events : []});
+      var model = this.get("model"),
+          newPerson = Expense.Person.create({id : model.get("length")+"", events : []});
       this.set("newPerson", newPerson);
       this.set("addingPerson", true);
-      this.get("model").pushObject(newPerson);
+      model.pushObject(newPerson);
     },
 
     savePerson : function() {
@@ -27,7 +27,6 @@ Expense.PeopleController = Ember.ArrayController.extend({
 Expense.PeoplePersonController = Ember.Controller.extend({
 });
 
-Expense.EVENT_COUNT = 0;
 Expense.EventsController = Ember.ArrayController.extend({
   addingEvent : false,
   newEvent : null,
@@ -52,10 +51,11 @@ Expense.EventsController = Ember.ArrayController.extend({
 
   actions : {
     addEvent : function() {
-      var newEvent = Expense.Event.create({id : (Expense.EVENT_COUNT++)+"", peopleAttended : [], amt : 0});
+      var model = this.get("model"),
+          newEvent = Expense.Event.create({id : model.get("length")+"", peopleAttended : [], amt : 0});
       this.set("newEvent", newEvent);
       this.set("addingEvent", true);
-      this.get("model").addObject(newEvent);
+      model.addObject(newEvent);
     },
 
     saveEvent : function() {
@@ -86,7 +86,7 @@ Expense.EventsEventController = Ember.Controller.extend({
     removePerson : function(person) {
       var involved = this.get("model").get("peopleAttended"),
           personEvents = person.get("personObj").get("events");
-      personEvents.removeObject(personEvents.findBy('id', this.get("model").get("id")));
+      personEvents.removeObject(personEvents.findBy('eventId', this.get("model").get("id")));
       involved.removeObject(person);
     },
 
@@ -115,11 +115,11 @@ Expense.OutingReportController = Ember.Controller.extend({
         postData.people[i].events = person.get("events");
       }
       for(var i = 0; i < postData.events.length; i++) {
-        var event = dataobj.events.findBy('id', postData.events[i].id);
+        var event = dataobj.events.findBy('id', postData.events[i].id), peopleAttended = event.get("peopleAttended");
         delete postData.events[i].data;
-        postData.events[i].peopleAttended = JSON.parse(JSON.stringify(event.get("peopleAttended")));
+        postData.events[i].peopleAttended = JSON.parse(JSON.stringify(peopleAttended));
         for(var j = 0; j < postData.events[i].peopleAttended.length; j++) {
-          postData.events[i].peopleAttended[j].name = postData.events[i].peopleAttended[j].personObj.name;
+          postData.events[i].peopleAttended[j].name = peopleAttended[j].get("name");
           delete postData.events[i].peopleAttended[j].personObj;
         }
       }
