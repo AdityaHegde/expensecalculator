@@ -22,6 +22,12 @@ Expense.OutingRoute = Ember.Route.extend({
       return data;
     }
   },
+
+  afterModel : function(model, transition) {
+   if(/^outing/.test(transition.targetName)) {
+     this.transitionTo('people');
+   }
+  },
 });
 
 Expense.PeopleRoute = Ember.Route.extend({

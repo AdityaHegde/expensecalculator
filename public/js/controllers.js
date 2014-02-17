@@ -119,6 +119,7 @@ Expense.OutingReportController = Ember.Controller.extend({
         delete postData.events[i].data;
         postData.events[i].peopleAttended = JSON.parse(JSON.stringify(event.get("peopleAttended")));
         for(var j = 0; j < postData.events[i].peopleAttended.length; j++) {
+          postData.events[i].peopleAttended[j].name = postData.events[i].peopleAttended[j].personObj.name;
           delete postData.events[i].peopleAttended[j].personObj;
         }
       }
