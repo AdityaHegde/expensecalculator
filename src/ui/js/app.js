@@ -1,4 +1,6 @@
-Expense = Ember.Application.create();
+Expense = Ember.Application.create({
+  rootElement : "#expense-calc",
+});
 
 var
 attr = DS.attr;

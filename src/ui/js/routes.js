@@ -9,10 +9,16 @@ Expense.OutingRoute = Ember.Route.extend({
     if(params.outing_name && params.outing_name !== "new" && data.get("outing_name") != params.outing_name) {
       return Ember.RSVP.Promise(function(resolve, reject) {
         $.ajax({url : window.location.origin+"/data?outingName="+params.outing_name}).done(function(retdata) {
-          data.set('people', retdata.people);
-          data.set('events', retdata.events);
-          data.set('outing_name', params.outing_name);
-          resolve(data);
+          if(retdata.status === "0") {
+            retdata = retdata.data;
+            data.set('people', retdata.people);
+            data.set('events', retdata.events);
+            data.set('outing_name', params.outing_name);
+            resolve(data);
+          }
+          else {
+            reject(retdata.message);
+          }
         }).fail(function(message) {
           reject(message);
         })

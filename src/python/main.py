@@ -1,10 +1,10 @@
 import os
 import urllib
 import json
+import response
 
 from google.appengine.api import users
 from google.appengine.ext import ndb
-from google.appengine.api import oauth
 
 import logging
 import webapp2
@@ -76,21 +76,33 @@ def save_outing_details(outingData):
 class MainPage(webapp2.RequestHandler):
 
     def get(self):
-        self.redirect("/public/index.html")
+        user = users.get_current_user()
+        if user:
+            self.redirect("/public/index.html")
+        else:
+            self.redirect(users.create_login_url(self.request.uri))
 
 
 class DataRequest(webapp2.RequestHandler):
 
     def get(self):
         self.response.headers['Content-Type'] = 'application/json' 
-        self.response.out.write(json.dumps(get_outing_details(self.request.get('outingName'))))
+        user = users.get_current_user()
+        if user:
+            self.response.out.write(json.dumps(response.success("success", get_outing_details(self.request.get('outingName')))))
+        else:
+            self.response.out.write(json.dumps(response.failure("401", "Unauthorised user")))
 
     def post(self):
-        outingData = json.loads(self.request.POST['outingData'])
-        logging.warning(outingData)
-        save_outing_details(outingData)
         self.response.headers['Content-Type'] = 'application/json' 
-        self.response.out.write(json.dumps({"status" : "success"}))
+        user = users.get_current_user()
+        if user:
+            outingData = json.loads(self.request.POST['outingData'])
+            logging.warning(outingData)
+            save_outing_details(outingData)
+            self.response.out.write(json.dumps(response.success("success", {})))
+        else:
+            self.response.out.write(json.dumps(response.failure("401", "Unauthorised user")))
 
 
 app = webapp2.WSGIApplication([
