@@ -10,9 +10,9 @@ PY_PROD_UI_PATH = $(PY_PROD_PATH)/public
 PY_PROD_UI_LIB_PATH = $(PY_PROD_UI_PATH)/libs
 
 JS_SRC_PATH = src/ui/js/
-JS_SRC_LIB_PATH = $(addprefix $(JS_SRC_PATH), libs/)
-JS_SRC_FILES = utils.js app.js controllers.js objects.js routes.js
-JS_SRC_LIB_FILES = jquery-1.10.2.js handlebars-1.1.2.js ember.js ember-data.js bootstrap.js
+JS_SRC_LIB_PATH = $(addprefix $(JS_SRC_PATH), libs)
+JS_SRC_FILES = $(filter-out libs, $(notdir $(wildcard $(JS_SRC_PATH)/*)))
+JS_SRC_LIB_FILES = $(wildcard $(JS_SRC_LIB_PATH)/*)
 JS_OP_FILES = $(JS_SRC_FILES:%.js=%.min.js)
 
 CSS_SRC_PATH = src/ui/css/
@@ -44,14 +44,14 @@ $(PY_PROD_UI_PATH) :
 $(PY_PROD_UI_LIB_PATH) :
 	mkdir -p $(PY_PROD_UI_LIB_PATH)
 
-build : build-python build-static-lib build-static
+build : build-python build-static build-static-lib
 .PHONY : build
 
 build-python : $(wildcard src/python/*) | $(PY_PROD_PATH)
 	cp $^ $(PY_PROD_PATH)
 .PHONY : build-python
 
-build-static-lib : $(addprefix $(JS_SRC_LIB_PATH), $(JS_SRC_LIB_FILES)) | $(PY_PROD_UI_LIB_PATH)
+build-static-lib : $(JS_SRC_LIB_FILES) | $(PY_PROD_UI_LIB_PATH)
 	cp $^ $(PY_PROD_UI_LIB_PATH)/
 .PHONY : build-static-lib
 
