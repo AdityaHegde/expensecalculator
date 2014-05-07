@@ -12,7 +12,7 @@
 <body>
   <div id="expense-calc"></div>
 
-  <script type="text/x-handlebars" data-template-name="outing">
+  <script type="text/x-handlebars" data-template-name="index">
     <nav class="navbar navbar-default" role="navigation">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-items">
@@ -25,53 +25,67 @@
       </div>
       <div class="collapse navbar-collapse" id="navbar-items">
         <ul class="nav navbar-nav">
-          <li id="people-link">{{#link-to 'people' model.outing_name}}People{{/link-to}}</li>
-          <li id="events-link">{{#link-to 'events' model.outing_name}}Events{{/link-to}}</li>
-          <li id="report-link">{{#link-to 'outing.report' model.outing_name}}Report{{/link-to}}</li>
+          <li id="people-link">{{#link-to 'user_summary'}}Home{{/link-to}}</li>
+          <li id="report-link">{{#link-to 'outing.report' model.selected_outing}}Report{{/link-to}}</li>
         </ul>
+        <p class="navbar-text navbar-right">Signed in as {{model.userName}}</p>
       </div>
     </nav>
     <div class="container">
       {{outlet}}
     </div>
     <footer class="modal-footer">
-      <a href="https://github.com/AdityaHegde/expensecalculator" target="_blank">Expense Calculator v1.0.0</a> - Powered by <a href="http://emberjs.com" target="_blank">ember.js</a>
+      <a href="https://github.com/AdityaHegde/expensecalculator" target="_blank">Expense Calculator v1.1.0</a> - Powered by <a href="http://emberjs.com" target="_blank">ember.js</a>
     </footer>
   </script>
 
-  <script type="text/x-handlebars" id="people">
+  <script type="text/x-handlebars" data-template-name="user_summary">
     <div class="col-sm-4">
-      <div class="people-list">
-        <h4>People</h4>
-        <table class='table'>
-          <thead>
-            <tr>
-              <th class="col-sm-6">Name</th>
-              <th class="col-sm-3">Owes</th>
-              <th class="col-sm-3">Owed</th>
-            </tr>
-          </thead>
-          {{#each model}}
-          <tr>
-            <td class="col-sm-6">{{#link-to 'people.person' this}}-{{name}}-{{/link-to}}</td>
-            <td class="col-sm-3">{{owes}}</td>
-            <td class="col-sm-3">{{owed}}</td>
-          </tr>
-          {{/each}}
-        </table>
-        <div>
-        {{#if addingPerson}}
-          <div class="form-horizontal">
-            <div class="form-group">
-              <label class="col-sm-2 control-label">Name</label>
-              <div class="col-sm-10">{{input type="text" class="form-control" value=newPerson.name autofocus="autofocus"}}</div>
+      {{#link-to 'outing' "new" class="btn btn-primary"}}Create New{{/link-to}}
+      <div>
+        {{#each model.outings}}
+          {{#link-to 'user_summary.outing_short' this}}{{outingName}}{{/link-to}}
+        {{/each}}
+      </div>
+    </div>
+    <div class="col-sm-8">
+      {{outlet}}
+    </div>
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="user_summary/outing_short">
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="outing">
+    <div class="col-sm-4">
+      <div class="panel-group" id="left-bar">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#left-bar" href="#people-list">
+                People
+              </a>
+            </h4>
+          </div>
+          <div id="people-list" class="panel-collapse collapse in">
+            <div class="panel-body">
+              {{partial "people"}}
             </div>
           </div>
-          <button class="btn btn-primary" {{action 'savePerson'}}>Save</button>
-          <button class="btn btn-default" {{action 'cancelEditPerson'}}>Cancel</button>
-        {{else}}
-          <button class="btn btn-default" {{action 'addPerson'}}>Add</button>
-        {{/if}}
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#left-bar" href="#events-list">
+                Events
+              </a>
+            </h4>
+          </div>
+          <div id="events-list" class="panel-collapse collapse">
+            <div class="panel-body">
+              {{partial "events"}}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -80,65 +94,96 @@
     </div>
   </script>
 
-  <script type="text/x-handlebars" id="people/person">
+  <script type="text/x-handlebars" id="people">
+    <div class="people-list">
+      <h4>People</h4>
+      <table class='table'>
+        <thead>
+          <tr>
+            <th class="col-sm-6">Name</th>
+            <th class="col-sm-3">Owes</th>
+            <th class="col-sm-3">Owed</th>
+          </tr>
+        </thead>
+        {{#each model.people}}
+        <tr>
+          <td class="col-sm-6">{{#link-to 'outing.person' this}}-{{name}}-{{/link-to}}</td>
+          <td class="col-sm-3">{{owes}}</td>
+          <td class="col-sm-3">{{owed}}</td>
+        </tr>
+        {{/each}}
+      </table>
+      <div>
+      {{#if addingPerson}}
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Name</label>
+            <div class="col-sm-10">{{input type="text" class="form-control" value=newPerson.name autofocus="autofocus"}}</div>
+          </div>
+        </div>
+        <button class="btn btn-primary" {{action 'savePerson'}}>Save</button>
+        <button class="btn btn-default" {{action 'cancelEditPerson'}}>Cancel</button>
+      {{else}}
+        <button class="btn btn-default" {{action 'addPerson'}}>Add</button>
+      {{/if}}
+      </div>
+    </div>
+  </script>
+
+  <script type="text/x-handlebars" id="outing/person">
     <h3>{{model.name}}</h3>
     <h4><small>Owes : {{model.owes}}</small></h4>
     <h4><small>Owed : {{model.owed}}</small></h4>
   </script>
 
   <script type="text/x-handlebars" data-template-name="events">
-    <div class="col-sm-4">
-      <div class="events-list">
-        <h4>Events</h4>
-        <table class='table'>
-          <thead>
-            <tr>
-              <th class="col-sm-6">Name</th>
-              <th class="col-sm-3">Paid</th>
-              <th class="col-sm-3">Total</th>
-            </tr>
-          </thead>
-          {{#each model}}
+    <div class="events-list">
+      <h4>Events</h4>
+      <table class='table'>
+        <thead>
           <tr>
-            <td class="col-sm-6">{{#link-to 'events.event' this}}-{{name}}-{{/link-to}}</td>
-            <td class="col-sm-3">{{amtPaid}}</td>
-            <td class="col-sm-3">{{amt}}</td>
+            <th class="col-sm-6">Name</th>
+            <th class="col-sm-3">Paid</th>
+            <th class="col-sm-3">Total</th>
           </tr>
-          {{/each}}
-          <tfoot>
-            <tr>
-              <td class="col-sm-6">Total</td>
-              <td class="col-sm-3">{{amtPaid}}</td>
-              <td class="col-sm-3">{{totalAmt}}</td>
-            </tr>
-          </tfoot>
-        </table>
-        <div>
-        {{#if addingEvent}}
-          <div class="form-horizontal">
-            <div class="form-group">
-              <label class="col-sm-2 control-label">Name</label>
-              <div class="col-sm-10">{{input type="text" class="form-control" value=newEvent.name autofocus="autofocus"}}</div>
-            </div>
-            <div class="form-group">
-              <label class="col-sm-2 control-label">Amount</label>
-              <div class="col-sm-10">{{input type="text" class="form-control" value=newEvent.amt}}</div>
-            </div>
+        </thead>
+        {{#each model.events}}
+        <tr>
+          <td class="col-sm-6">{{#link-to 'outing.event' this}}-{{name}}-{{/link-to}}</td>
+          <td class="col-sm-3">{{amtPaid}}</td>
+          <td class="col-sm-3">{{amt}}</td>
+        </tr>
+        {{/each}}
+        <tfoot>
+          <tr>
+            <td class="col-sm-6">Total</td>
+            <td class="col-sm-3">{{amtPaid}}</td>
+            <td class="col-sm-3">{{totalAmt}}</td>
+          </tr>
+        </tfoot>
+      </table>
+      <div>
+      {{#if addingEvent}}
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Name</label>
+            <div class="col-sm-10">{{input type="text" class="form-control" value=newEvent.name autofocus="autofocus"}}</div>
           </div>
-          <button class="btn btn-primary" {{action 'saveEvent'}}>Save</button>
-          <button class="btn btn-default" {{action 'cancelEditEvent'}}>Cancel</button>
-        {{else}}
-          <button class="btn btn-default" {{action 'addEvent'}}>Add</button>
-        {{/if}}
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Amount</label>
+            <div class="col-sm-10">{{input type="text" class="form-control" value=newEvent.amt}}</div>
+          </div>
         </div>
+        <button class="btn btn-primary" {{action 'saveEvent'}}>Save</button>
+        <button class="btn btn-default" {{action 'cancelEditEvent'}}>Cancel</button>
+      {{else}}
+        <button class="btn btn-default" {{action 'addEvent'}}>Add</button>
+      {{/if}}
       </div>
-    </div>
-    <div class="col-sm-8">
-      {{outlet}}
     </div>
   </script>
 
-  <script type="text/x-handlebars" id="events/event">
+  <script type="text/x-handlebars" id="outing/event">
     <h3>{{model.name}}</h3>
     <h4><small>Amount : {{model.amtPaid}}/{{model.amt}}</small></h4>
     <div>

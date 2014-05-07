@@ -9,6 +9,8 @@ from google.appengine.ext import ndb
 import logging
 import webapp2
 
+#TODO : Use user_id instead of email
+
 def convert_query_to_dict(query):
     return [e.to_dict() for e in query]
 
@@ -16,17 +18,11 @@ def delete_from_query(query):
     for e in query:
         e.key.delete()
 
-class PersonEvent(ndb.Model):
-    eventId = ndb.StringProperty()
-    owes = ndb.FloatProperty()
-    owed = ndb.FloatProperty()
-
 class Person(ndb.Model):
     id = ndb.StringProperty()
     name = ndb.StringProperty()
     owes = ndb.FloatProperty()
     owed = ndb.FloatProperty()
-    events = ndb.StructuredProperty(PersonEvent, repeated=True)
 
 class PersonAttended(ndb.Model):
     name = ndb.StringProperty()
@@ -73,6 +69,26 @@ def save_outing_details(outingData):
     save_new_delete_old_query(Person, outingData['people'], Person.query(ancestor=outingKey).fetch(), outingKey)
     save_new_delete_old_query(Event, outingData['events'], Event.query(ancestor=outingKey).fetch(), outingKey)
 
+def get_outings_by_person(person):
+    people = Person.query(Person.name == person)
+    outingNames = []
+    for person in people:
+        outingNames.insert(0, {
+          "outingName" : person.parent_key().id(),
+          "owes" : person["owes"],
+          "owed" : person["owed"],
+        })
+
+    outingNames.sort()
+    return outingNames
+
+providers = {
+  'Google'   : 'https://www.google.com/accounts/o8/id',
+  'Yahoo'    : 'yahoo.com',
+  'MySpace'  : 'myspace.com',
+  'AOL'      : 'aol.com',
+}
+
 class MainPage(webapp2.RequestHandler):
 
     def get(self):
@@ -80,7 +96,24 @@ class MainPage(webapp2.RequestHandler):
         if user:
             self.redirect("/public/index.html")
         else:
-            self.redirect(users.create_login_url(self.request.uri))
+            self.response.out.write('Hello! Sign in at: ')
+            for name, uri in providers.items():
+                self.response.out.write('[<a href="%s">%s</a>]' % (users.create_login_url(federated_identity=uri), name))
+
+
+class PageDataRequest(webapp2.RequestHandler):
+
+    def get(self):
+        self.response.headers['Content-Type'] = 'application/json' 
+        user = users.get_current_user()
+        if user:
+            self.response.out.write(json.dumps(response.success("success", {
+              "userName" : user.nickname(),
+              "userMail" : user.email(),
+              "outings" : get_outings_by_person(user.email()),
+            })))
+        else:
+            self.response.out.write(json.dumps(response.failure("401", "Unauthorised user")))
 
 
 class DataRequest(webapp2.RequestHandler):
@@ -107,5 +140,6 @@ class DataRequest(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/data', DataRequest),
+    ('/page_data', PageDataRequest),
     ('/', MainPage),
 ], debug=True)

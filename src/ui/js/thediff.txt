@@ -1,0 +1,37 @@
+Index: src/data/yci_config.data
+===================================================================
+--- src/data/yci_config.data	(revision 173866)
++++ src/data/yci_config.data	(working copy)
+@@ -10593,7 +10593,7 @@
+         'description' => 'Y! Search Local Mobile Ads New Interface',
+         'allowedServeDomainInfo' => {
+             'subDomainLevel' => 2,
+-            'domainList' => ['local.yahoo.com'],
++            'domainList' => ['search.yahoo.com', 'local.yahoo.com'],
+         },
+         'titleCleaner' => [
+ 	    qr/ - Yahoo Local Search Results$/,
+Index: ChangeLog
+===================================================================
+--- ChangeLog	(revision 173866)
++++ ChangeLog	(working copy)
+@@ -1,3 +1,6 @@
++Version 1.2014.0403.01
++  * Ticket 6872715 - ROS on Local Mobile SRP: Add search.yahoo.com in allowed domain list
++
+ Version 1.2014.0403.00
+   * Ticket 6848473 - ROS on Local : Create 2 ad tags for ads on right rail on DD and local SRP
+ 
+Index: configure.ac
+===================================================================
+--- configure.ac	(revision 173866)
++++ configure.ac	(working copy)
+@@ -1,7 +1,7 @@
+ dnl --- Package name is first argument to AC_INIT
+ dnl --- Release version is second argument to AC_INIT
+ 
+-AC_INIT([domainmatch_yci_data], [1.2014.0403.00], [ysm-dm-dev@yahoo-inc.com])
++AC_INIT([domainmatch_yci_data], [1.2014.0403.01], [ysm-dm-dev@yahoo-inc.com])
+ AM_INIT_AUTOMAKE
+ 
+ dnl --- Variables you might need to edit for a new project --

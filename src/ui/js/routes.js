@@ -1,6 +1,18 @@
 Expense.IndexRoute = Ember.Route.extend({
   model : function(params, transtion) {
-    this.transitionTo('outing', 'new');
+    return Ember.RSVP.Promise(function(resolve, reject) {
+      $.ajax({url : "/page_data", dataType : "json"}).done(function(retdata) {
+        if(retdata.status === "0") {
+          resolve(Expense.BaseObject.create(retdata.data));
+        }
+        else {
+          reject(retdata.message);
+        }
+      }).fail(function(message) {
+        //reject(message);
+        resolve(Expense.BaseObject.create({userName : "aditya"}));
+      });
+    });
   },
 });
 
@@ -30,42 +42,30 @@ Expense.OutingRoute = Ember.Route.extend({
   },
 
   afterModel : function(model, transition) {
-   if(transition.targetName === 'outing.index') {
+   /*if(transition.targetName === 'outing.index') {
      this.transitionTo('people');
-   }
+   }*/
   },
 });
 
-Expense.PeopleRoute = Ember.Route.extend({
-  model : function(params, transition) {
-    return data.get("people");
-  },
-});
-
-Expense.PeoplePersonRoute = Ember.Route.extend({
+Expense.OutingPersonRoute = Ember.Route.extend({
   model : function(params, transition) {
     var model = data.get("people").findBy('id', params.person_id);
     if(model) return model;
-    else this.transitionTo('people');
+    else this.transitionTo('outing', data.get("outing_name"));
   },
 });
 
-Expense.EventsRoute = Ember.Route.extend({
-  model : function(params, transition) {
-    return data.get("events");
-  },
-});
-
-Expense.EventsEventRoute = Ember.Route.extend({
+Expense.OutingEventRoute = Ember.Route.extend({
   model : function(params, transition) {
     var model = data.get("events").findBy('id', params.event_id);
     if(model) return model;
-    else this.transitionTo('events');
+    else this.transitionTo('outing', data.get("outing_name"));
   },
 });
 
 Expense.OutingReportRoute = Ember.Route.extend({
   model : function(params) {
-    return Expense.ReportObject.create({peopleObjs : data.get("people"), name : data.get("outing_name")});
+    return Expense.ReportObject.create({people : data.get("people"), name : data.get("outing_name")});
   },
 });
