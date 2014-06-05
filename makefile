@@ -34,6 +34,7 @@ CSS_OP_FILES = $(notdir $(CSS_SRC_FILES:%.css=%.min.css))
 
 MINIFY_COMMAND = java
 MINIFY_COMMAND_FLAGS = -jar build/yuicompressor-2.4.8.jar
+MINIFY_HTML_COMMAND_FLAGS = --type css
 
 %.min.js :
 	$(MINIFY_COMMAND) $(MINIFY_COMMAND_FLAGS) $(filter %$(@:%.min.js=%.js), $(JS_SRC_FILES_FULLPATH)) > $@
@@ -46,7 +47,7 @@ $(MINIFIED_APP_JS) : $(JS_OP_FILES)
 	perl $(MINIFY_SCRIPT) $^ > $@
 
 index.html : $(INDEX_PATH)
-	perl $(REPLACE_SCRIPT_TAGS) $(INDEX_PATH) $(MINIFIED_APP_JS) $(JS_SRC_FILES) > $@
+	perl $(REPLACE_SCRIPT_TAGS) $(INDEX_PATH) $(MINIFIED_APP_JS) $(JS_SRC_FILES) | $(MINIFY_COMMAND) $(MINIFY_COMMAND_FLAGS) $(MINIFY_HTML_COMMAND_FLAGS) > $@
 
 test :
 	ls $(JS_SRC_FILES)

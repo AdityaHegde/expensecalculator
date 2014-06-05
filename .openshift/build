@@ -1,0 +1,1 @@
+export OPENSHIFT_REPO_DIR=$OPENSHIFT_HOMEDIR/app-root/runtime/repo/prod/nodejs/

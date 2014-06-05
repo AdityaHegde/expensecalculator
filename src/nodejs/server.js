@@ -11,4 +11,4 @@ app.post("/data", dataHandler.handlerPost);
 
 app.use("/", express.static('./public'));
 
-app.listen(process.env.PORT || 5000);
+app.listen(parseInt(process.env.OPENSHIFT_NODEJS_PORT) || 8080, process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
