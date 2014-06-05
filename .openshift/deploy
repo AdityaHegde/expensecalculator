@@ -1,0 +1,2 @@
+#! /bin/bash
+rm -rf $OPENSHIFT_HOMEDIR/app-root/runtime/repo/src
