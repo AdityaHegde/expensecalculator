@@ -113,6 +113,7 @@ git-push :
 	git add -A
 	git commit
 	git push
+	git push openshift
 .PHONY : git-push
 
 checkin : build clean git-push
