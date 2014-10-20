@@ -6,8 +6,14 @@ app.configure(function(){
   app.use(express.bodyParser());
 });
 
-app.get("/data", dataHandler.handlerGet);
-app.post("/data", dataHandler.handlerPost);
+app.get("/profile/get", dataHandler.handlerGet);
+app.get("/outing/get", dataHandler.handlerGet);
+app.post("/outing/create", dataHandler.handlerCreate);
+app.post("/outing/update", dataHandler.handlerUpdate);
+app.post("/person/create", dataHandler.handlerCreate);
+app.post("/person/update", dataHandler.handlerUpdate);
+app.post("/event/create", dataHandler.handlerCreate);
+app.post("/event/update", dataHandler.handlerUpdate);
 
 app.use("/", express.static('./public'));
 

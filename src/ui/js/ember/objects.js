@@ -15,6 +15,7 @@ Expense.Outing = DS.Model.extend(Utils.ObjectWithArrayMixin, {
   arrayProps : ['people', 'events'],
 
   people : hasMany("person", {async : true}),
+
   peopleWillBeDeleted : function(person) {
     var events = this.get("events");
     for(var i = 0; i < events.length; i++) {
@@ -90,7 +91,7 @@ Expense.Outing = DS.Model.extend(Utils.ObjectWithArrayMixin, {
     return Number(this.get("totalAmt")) - Number(this.get("amtPaid"));
   }.property('amtPaid'),
 });
-Expense.Outing.keys = ['id'];
+Expense.Outing.keys = ['_id'];
 Expense.Outing.apiName = 'outing';
 Expense.Outing.queryParams = ['id'];
 Expense.Outing.findParams = [];
@@ -121,6 +122,8 @@ Expense.Person = DS.Model.extend(Utils.DelayedAddToHasMany, {
 
   owes : attr('number', {"default" : 0}),
   owed : attr('number', {"default" : 0}),
+  paid : 0,
+  toPay : 0,
 
   owesOwedHasToChange : function() {
     var events = this.get("personEvents");
@@ -137,6 +140,8 @@ Expense.Person = DS.Model.extend(Utils.DelayedAddToHasMany, {
         diff = toPay - paid;
     this.set("owes", (diff > 0 ? diff : 0));
     this.set("owed", (diff < 0 ? -diff : 0));
+    this.set("paid", paid);
+    this.set("toPay", toPay);
   }.observes('personEvents.@each.toPay', 'personEvents.@each.paid'),
 
   personEvents : hasMany("person-event", {async : true}),
@@ -372,3 +377,5 @@ Expense.ReportObject = Ember.Object.extend({
     });
   },
 });
+
+CrudAdapter.ModelMap = {};

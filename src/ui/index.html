@@ -104,16 +104,18 @@
         <thead>
           <tr>
             <th class="col-sm-6">Name</th>
-            <th class="col-sm-3">Owes</th>
-            <th class="col-sm-3">Owed</th>
+            <th class="col-sm-2">Owes</th>
+            <th class="col-sm-2">Owed</th>
+            <th class="col-sm-2">TotalPaid</th>
           </tr>
         </thead>
         <tbody>
           {{#each model.people}}
           <tr>
             <td class="col-sm-6">{{#link-to 'outing.person' this}}-{{name}}-{{/link-to}}</td>
-            <td class="col-sm-3">{{owes}}</td>
-            <td class="col-sm-3">{{owed}}</td>
+            <td class="col-sm-2">{{owes}}</td>
+            <td class="col-sm-2">{{owed}}</td>
+            <td class="col-sm-2">{{totalPaid}}</td>
           </tr>
           {{/each}}
         </tbody>

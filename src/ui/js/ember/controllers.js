@@ -25,41 +25,53 @@ Expense.OutingController = Ember.Controller.extend({
   actions : {
     addPerson : function() {
       var people = this.get("model.people"),
-          newPerson = this.store.createRecord("person", {id : people.get("length")+"", events : []});
+          newPerson = this.store.createRecord("person", {events : [], id : people.get("length")});
       this.set("newPerson", newPerson);
       this.set("addingPerson", true);
-      people.pushObject(newPerson);
+      //people.pushObject(newPerson);
     },
 
     savePerson : function() {
-      this.set("addingPerson", false);
-      this.transitionToRoute('outing.person', this.get("newPerson").id);
+      var newPerson = this.get("newPerson"),
+          people = this.get("model.people"),
+          that = this;
+      //CrudAdapter.saveRecord(newPerson).then(function(newPerson) {
+        people.pushObject(newPerson);
+        that.set("addingPerson", false);
+        that.transitionToRoute('outing.person', newPerson.id);
+      //});
     },
 
     cancelEditPerson : function() {
       var people = this.get("model.people"), newPerson = this.get("newPerson");
       people.removeObject(newPerson);
-      newPerson.unloadRecord();
+      //newPerson.unloadRecord();
       this.set("addingPerson", false);
     },
 
     addEvent : function() {
       var events = this.get("model.events"),
-          newEvent = this.store.createRecord("event", {id : events.get("length")+"", amt : 0});
+          newEvent = this.store.createRecord("event", {amt : 0, id : events.get("length")});
       this.set("newEvent", newEvent);
       this.set("addingEvent", true);
-      events.pushObject(newEvent);
+      //events.pushObject(newEvent);
     },
 
     saveEvent : function() {
-      this.set("addingEvent", false);
-      this.transitionToRoute('outing.event', this.get("newEvent").id);
+      var newEvent = this.get("newEvent"),
+          events = this.get("model.events"),
+          that = this;
+      //CrudAdapter.saveRecord(newEvent).then(function(newEvent) {
+        events.pushObject(newEvent);
+        that.set("addingEvent", false);
+        that.transitionToRoute('outing.event', newEvent.id);
+      //});
     },
 
     cancelEditEvent : function() {
       var events = this.get("model.events"), newEvent = this.get("newEvent");
       events.removeObject(newEvent);
-      newEvent.unloadRecord();
+      //newEvent.unloadRecord();
       this.set("addingEvent", false);
     },
   },

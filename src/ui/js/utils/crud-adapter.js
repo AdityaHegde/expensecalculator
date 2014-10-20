@@ -223,6 +223,7 @@ CrudAdapter.ApplicationSerializer = DS.RESTSerializer.extend({
 
   normalize : function(type, hash, prop) {
     //generate id property for ember data
+    if(hash._id) hash.id = hash._id;
     hash.id = CrudAdapter.getId(hash, type);
     this.normalizeAttributes(type, hash);
     this.normalizeRelationships(type, hash);
@@ -260,6 +261,7 @@ CrudAdapter.ApplicationSerializer = DS.RESTSerializer.extend({
 
   serialize : function(record, options) {
     var json = this._super(record, options);
+    if(json._id) json.id = json._id;
 
     if (this.serializeHash && this.serializeHash[record.__proto__.constructor.typeKey]) {
       this.serializeHash[record.__proto__.constructor.typeKey](record, json);
@@ -325,6 +327,7 @@ CrudAdapter.ApplicationSerializer = DS.RESTSerializer.extend({
 });
 
 CrudAdapter.getId = function(record, type) {
+  //if(record._id) return record._id;
   var id = record.id;
   if(!id) {
     var keys = type.keys || [], ids = [];
@@ -345,6 +348,7 @@ CrudAdapter.backupData = function(record, type, create) {
   CrudAdapter.backupDataMap[type.typeKey] = CrudAdapter.backupDataMap[type.typeKey] || {};
   CrudAdapter.backupDataMap[type.typeKey][id] = data;
   if(type.retainId) data.id = id;
+  //if(type.retainId && id !== "new") data.id = id;
   for(var i = 0; i < type.keys.length; i++) {
     if(Ember.isEmpty(data[type.keys[i]])) delete data[type.keys[i]];
   }
@@ -370,6 +374,7 @@ CrudAdapter.backupData = function(record, type, create) {
 
 CrudAdapter.retrieveBackup = function(hash, type, hasId) {
   var id = (hasId && CrudAdapter.getId(hash, type)) || "new";
+  //if(hash._id) hash.id = hash._id;
   if(CrudAdapter.backupDataMap[type.typeKey] && CrudAdapter.backupDataMap[type.typeKey][id]) {
     var data = CrudAdapter.backupDataMap[type.typeKey][id];
     delete CrudAdapter.backupDataMap[type.typeKey][id];
